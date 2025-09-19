@@ -9,3 +9,18 @@
 .list{display:grid;gap:8px}
 table{width:100%;border-collapse:collapse}
 th,td{border:1px solid var(--line);padding:8px;text-align:left}
+/* TAP GUARD — no visual change */
+header::before, header::after,
+nav::before, nav::after,
+section::before, section::after,
+.card::before, .card::after,
+[class*="overlay"]::before, [class*="overlay"]::after {
+  pointer-events: none !important;
+}
+
+a, button, [data-href] {
+  pointer-events: auto !important;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  cursor: pointer;
+}
