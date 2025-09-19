@@ -149,5 +149,52 @@ h1{margin:4px 0 0; font-size:24px; letter-spacing:.6px; text-align:center}
     document.addEventListener('touchend', handler, { capture: true, passive: false });
   })();
 </script>
+<script>
+/* CLICKFIX — ONLY NAVIGATE, NO DESIGN CHANGES */
+(function () {
+  // 1) Find ONLY the two target buttons/links by visible text
+  var targets = Array.from(document.querySelectorAll('a,button,div,span'))
+    .filter(function (el) {
+      var t = (el.textContent || '').toUpperCase().trim();
+      return /SHTO\s*KLIENT|KLIENT\s*I\s*RI\s*\(PRANIMI\)/.test(t);
+    });
+
+  if (!targets.length) return;
+
+  // 2) Safe navigation helper: try clean URL, then .html fallback
+  function goPranimi() {
+    try { window.location.assign('/pranimi'); }
+    catch (e) { window.location.assign('/pranimi.html'); }
+  }
+
+  // 3) Attach direct listeners (no global capture) and defeat bad overlays
+  function bind(el) {
+    // Make absolutely sure the element can be tapped and sits above overlays
+    el.style.pointerEvents = 'auto';
+    el.style.position = el.style.position || 'relative';
+    el.style.zIndex = '9999';
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    el.setAttribute('role', (el.tagName === 'A') ? 'link' : 'button');
+
+    var handler = function (ev) {
+      // ONLY block default on these targets so the rest of the page still works
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation();
+      // Blur to avoid stuck focus on iOS
+      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      goPranimi();
+    };
+
+    el.addEventListener('click', handler, { passive: false });
+    el.addEventListener('touchend', handler, { passive: false });
+    el.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { handler(ev); }
+    }, { passive: false });
+  }
+
+  targets.forEach(bind);
+})();
+</script>
 
 </body></html>
