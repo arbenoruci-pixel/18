@@ -83,4 +83,71 @@ h1{margin:4px 0 0; font-size:24px; letter-spacing:.6px; text-align:center}
     </div>
     
 </div>
+<script>
+  (function () {
+    // Event delegation: handle clicks anywhere and navigate safely
+    function resolveHref(el) {
+      // 1) <a href="...">
+      if (el.tagName === 'A' && el.getAttribute('href') && el.getAttribute('href') !== '#') {
+        return el.getAttribute('href');
+      }
+      // 2) anything with data-href="..."
+      if (el.hasAttribute('data-href')) {
+        return el.getAttribute('data-href');
+      }
+      return null;
+    }
+
+    function findTargetHref(start) {
+      let el = start;
+      while (el && el !== document.body) {
+        const href = resolveHref(el);
+        if (href) return href;
+        el = el.parentElement;
+      }
+      return null;
+    }
+
+    function go(href) {
+      // Support both clean URLs and .html fallback
+      if (href === '/pranimi' && !location.pathname.endsWith('.html')) {
+        try { location.assign('/pranimi'); return; } catch(e){}
+        location.assign('/pranimi.html'); return;
+      }
+      if (href === '/' || href === '/index') {
+        try { location.assign('/'); return; } catch(e){}
+        location.assign('/index.html'); return;
+      }
+      // If a relative path without .html, try as-is, else fallback to .html
+      if (/^\/[a-z0-9\-\/]+$/i.test(href)) {
+        try { location.assign(href); return; } catch (e) {}
+        location.assign(href + '.html'); return;
+      }
+      // Otherwise just go
+      location.assign(href);
+    }
+
+    // Capture both touch and click (iOS Safari quirks)
+    function handler(ev) {
+      const startEl = ev.target;
+      const href = findTargetHref(startEl);
+      if (!href) return;
+
+      // prevent any default that might be blocking
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      // blur active element to avoid stuck focus
+      if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+      }
+
+      go(href);
+    }
+
+    document.addEventListener('click', handler, { capture: true, passive: false });
+    document.addEventListener('touchend', handler, { capture: true, passive: false });
+  })();
+</script>
+
 </body></html>
