@@ -50,307 +50,36 @@ h1{margin:4px 0 0; font-size:24px; letter-spacing:.6px; text-align:center}
     <h1>KOMPANIA JONI</h1>
     <div class="sub">PËR PASTRIMIN E TEPIHAVE</div>
     <div class="pills">
-      <a class="pill primary" href="/pranimi/">PRANIMI</a>
-      <a class="pill" href="/pastrimi/">PASTRIMI</a>
-      <a class="pill" href="/gati/">GATI</a>
-      <a class="pill" href="/transporti/">TRANSPORTI</a>
-      <a class="pill" href="/marrje-sot/">MARRJE SOT</a>
+      <a class="pill primary" href="/pranimi.html">PRANIMI</a>
+      <a class="pill" href="/pastrimi.html">PASTRIMI</a>
+      <a class="pill" href="/gati.html">GATI</a>
+      <a class="pill" href="/transporti.html">TRANSPORTI</a>
+      <a class="pill" href="/marrje-sot.html">MARRJE SOT</a>
     </div>
   </div>
 
   <div class="panel section">
     <div class="sec-title">KLIENTË — SHTO & KËRKO SHPEJT</div>
-    <a class="btnBig" href="/pranimi/">＋ SHTO KLIENT TË RI</a>
+    <a class="btnBig" href="/pranimi.html">＋ SHTO KLIENT TË RI</a>
     <div class="searchRow">
       <input class="input" placeholder="KËRKO KLIENTIN (EMËR / TELEFON)">
-      <a class="btn" href="/pastrimi/">KËRKO</a>
+      <a class="btn" href="/transporti.html">KËRKO</a>
     </div>
   </div>
 
-  
   <div class="panel section">
     <div class="sec-title">PRANIMI — I RI</div>
-    <a class="btnBig" href="/pranimi/">➕  KLIENT I RI (PRANIMI)</a>
+    <a class="btnBig" href="/pranimi.html">➕  KLIENT I RI (PRANIMI)</a>
     <div class="muted" style="margin-top:6px">Hap pranimin për klient të ri dhe fut copat/m².</div>
   </div>
 
   <div class="panel section">
     <div class="sec-title">TRANSPORT — KËRKO</div>
-    <a class="transportBtn" href="/transporti/">🚚  KLIENT TRANSPORTI</a>
+    <a class="transportBtn" href="/transporti.html">🚚  KLIENT TRANSPORTI</a>
     <div class="searchRow">
       <input class="input" placeholder="KËRKO KLIENT TRANSPORTI (EMËR / TEL)">
-      <a class="btn" href="/transporti/">KËRKO</a>
+      <a class="btn" href="/transporti.html">KËRKO</a>
     </div>
-    
+  </div>
 </div>
-<script>
-  (function () {
-    // Event delegation: handle clicks anywhere and navigate safely
-    function resolveHref(el) {
-      // 1) <a href="...">
-      if (el.tagName === 'A' && el.getAttribute('href') && el.getAttribute('href') !== '#') {
-        return el.getAttribute('href');
-      }
-      // 2) anything with data-href="..."
-      if (el.hasAttribute('data-href')) {
-        return el.getAttribute('data-href');
-      }
-      return null;
-    }
-
-    function findTargetHref(start) {
-      let el = start;
-      while (el && el !== document.body) {
-        const href = resolveHref(el);
-        if (href) return href;
-        el = el.parentElement;
-      }
-      return null;
-    }
-
-    function go(href) {
-      // Support both clean URLs and .html fallback
-      if (href === '/pranimi' && !location.pathname.endsWith('.html')) {
-        try { location.assign('/pranimi'); return; } catch(e){}
-        location.assign('/pranimi.html'); return;
-      }
-      if (href === '/' || href === '/index') {
-        try { location.assign('/'); return; } catch(e){}
-        location.assign('/index.html'); return;
-      }
-      // If a relative path without .html, try as-is, else fallback to .html
-      if (/^\/[a-z0-9\-\/]+$/i.test(href)) {
-        try { location.assign(href); return; } catch (e) {}
-        location.assign(href + '.html'); return;
-      }
-      // Otherwise just go
-      location.assign(href);
-    }
-
-    // Capture both touch and click (iOS Safari quirks)
-    function handler(ev) {
-      const startEl = ev.target;
-      const href = findTargetHref(startEl);
-      if (!href) return;
-
-      // prevent any default that might be blocking
-      ev.preventDefault();
-      ev.stopPropagation();
-
-      // blur active element to avoid stuck focus
-      if (document.activeElement && typeof document.activeElement.blur === 'function') {
-        document.activeElement.blur();
-      }
-
-      go(href);
-    }
-
-    document.addEventListener('click', handler, { capture: true, passive: false });
-    document.addEventListener('touchend', handler, { capture: true, passive: false });
-  })();
-</script>
-<script>
-/* CLICKFIX — ONLY NAVIGATE, NO DESIGN CHANGES */
-(function () {
-  // 1) Find ONLY the two target buttons/links by visible text
-  var targets = Array.from(document.querySelectorAll('a,button,div,span'))
-    .filter(function (el) {
-      var t = (el.textContent || '').toUpperCase().trim();
-      return /SHTO\s*KLIENT|KLIENT\s*I\s*RI\s*\(PRANIMI\)/.test(t);
-    });
-
-  if (!targets.length) return;
-
-  // 2) Safe navigation helper: try clean URL, then .html fallback
-  function goPranimi() {
-    try { window.location.assign('/pranimi'); }
-    catch (e) { window.location.assign('/pranimi.html'); }
-  }
-
-  // 3) Attach direct listeners (no global capture) and defeat bad overlays
-  function bind(el) {
-    // Make absolutely sure the element can be tapped and sits above overlays
-    el.style.pointerEvents = 'auto';
-    el.style.position = el.style.position || 'relative';
-    el.style.zIndex = '9999';
-    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
-    el.setAttribute('role', (el.tagName === 'A') ? 'link' : 'button');
-
-    var handler = function (ev) {
-      // ONLY block default on these targets so the rest of the page still works
-      ev.preventDefault();
-      ev.stopPropagation();
-      if (typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation();
-      // Blur to avoid stuck focus on iOS
-      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
-      goPranimi();
-    };
-
-    el.addEventListener('click', handler, { passive: false });
-    el.addEventListener('touchend', handler, { passive: false });
-    el.addEventListener('keydown', function (ev) {
-      if (ev.key === 'Enter' || ev.key === ' ') { handler(ev); }
-    }, { passive: false });
-  }
-
-  targets.forEach(bind);
-})();
-</script>
-<script>
-/* CLICK UNBLOCKER — no design changes */
-(function () {
-  // Return href for <a> or elements with data-href
-  function getHref(el){
-    if (!el) return null;
-    if (el.tagName === 'A') {
-      var h = el.getAttribute('href');
-      // ignore empty or "#"
-      if (h && h !== '#' && h.toLowerCase() !== 'javascript:void(0)') return h;
-    }
-    if (el.hasAttribute && el.hasAttribute('data-href')) {
-      return el.getAttribute('data-href');
-    }
-    return null;
-  }
-
-  // Climb up ancestors to find a clickable link
-  function findLink(start){
-    var el = start;
-    while (el && el !== document.documentElement) {
-      var h = getHref(el);
-      if (h) return { el: el, href: h };
-      el = el.parentElement;
-    }
-    return null;
-  }
-
-  // Normalize href to support clean URLs and .html fallback
-  function normalizeHref(href){
-    // If you actually have a file like /pranimi.html, keep it
-    if (/\.html(\?|#|$)/i.test(href)) return href;
-    // If it looks like a route (/pranimi), try it; if hosting lacks rewrites,
-    // the browser will 404 and user can add vercel.json later.
-    return href;
-  }
-
-  // Try to move despite overlays; temporarily disable top element pointer-events
-  function temporarilyUnblockAt(x, y){
-    var top = document.elementFromPoint(x, y);
-    if (!top) return null;
-    var prev = top.style && top.style.pointerEvents;
-    try { if (top && top.style) top.style.pointerEvents = 'none'; } catch(e){}
-    setTimeout(function(){ try { if (top && top.style) top.style.pointerEvents = prev || ''; } catch(e){} }, 700);
-    return top;
-  }
-
-  function nav(href){ try { window.location.assign(href); } catch(e){ window.location.href = href; } }
-
-  function coords(ev){
-    if (ev.touches && ev.touches[0]) return {x: ev.touches[0].clientX, y: ev.touches[0].clientY};
-    return {x: ev.clientX, y: ev.clientY};
-  }
-
-  function handle(ev){
-    var c = coords(ev);
-    var startEl = document.elementFromPoint(c.x, c.y) || ev.target;
-    var link = findLink(startEl);
-    if (!link) return; // let other clicks pass
-    var href = normalizeHref(link.href);
-
-    // Only intercept for real destinations
-    if (!href || href === '#' || /^javascript:/i.test(href)) return;
-
-    // Prevent broken handlers from eating the tap
-    ev.preventDefault(); ev.stopPropagation();
-    if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-
-    temporarilyUnblockAt(c.x, c.y);
-    // Defer a tick so the unblock applies before navigation
-    setTimeout(function(){ nav(href); }, 0);
-  }
-
-  // Use earliest events that most scripts DON'T block
-  window.addEventListener('pointerdown', handle, { capture: true, passive: false });
-  window.addEventListener('touchstart', handle, { capture: true, passive: false });
-  window.addEventListener('click', handle, { capture: true, passive: false });
-})();<script>
-/* CLICK UNBLOCKER — no design changes */
-(function () {
-  // Return href for <a> or elements with data-href
-  function getHref(el){
-    if (!el) return null;
-    if (el.tagName === 'A') {
-      var h = el.getAttribute('href');
-      // ignore empty or "#"
-      if (h && h !== '#' && h.toLowerCase() !== 'javascript:void(0)') return h;
-    }
-    if (el.hasAttribute && el.hasAttribute('data-href')) {
-      return el.getAttribute('data-href');
-    }
-    return null;
-  }
-
-  // Climb up ancestors to find a clickable link
-  function findLink(start){
-    var el = start;
-    while (el && el !== document.documentElement) {
-      var h = getHref(el);
-      if (h) return { el: el, href: h };
-      el = el.parentElement;
-    }
-    return null;
-  }
-
-  // Normalize href to support clean URLs and .html fallback
-  function normalizeHref(href){
-    // If you actually have a file like /pranimi.html, keep it
-    if (/\.html(\?|#|$)/i.test(href)) return href;
-    // If it looks like a route (/pranimi), try it; if hosting lacks rewrites,
-    // the browser will 404 and user can add vercel.json later.
-    return href;
-  }
-
-  // Try to move despite overlays; temporarily disable top element pointer-events
-  function temporarilyUnblockAt(x, y){
-    var top = document.elementFromPoint(x, y);
-    if (!top) return null;
-    var prev = top.style && top.style.pointerEvents;
-    try { if (top && top.style) top.style.pointerEvents = 'none'; } catch(e){}
-    setTimeout(function(){ try { if (top && top.style) top.style.pointerEvents = prev || ''; } catch(e){} }, 700);
-    return top;
-  }
-
-  function nav(href){ try { window.location.assign(href); } catch(e){ window.location.href = href; } }
-
-  function coords(ev){
-    if (ev.touches && ev.touches[0]) return {x: ev.touches[0].clientX, y: ev.touches[0].clientY};
-    return {x: ev.clientX, y: ev.clientY};
-  }
-
-  function handle(ev){
-    var c = coords(ev);
-    var startEl = document.elementFromPoint(c.x, c.y) || ev.target;
-    var link = findLink(startEl);
-    if (!link) return; // let other clicks pass
-    var href = normalizeHref(link.href);
-
-    // Only intercept for real destinations
-    if (!href || href === '#' || /^javascript:/i.test(href)) return;
-
-    // Prevent broken handlers from eating the tap
-    ev.preventDefault(); ev.stopPropagation();
-    if (ev.stopImmediatePropagation) ev.stopImmediatePropagation();
-
-    temporarilyUnblockAt(c.x, c.y);
-    // Defer a tick so the unblock applies before navigation
-    setTimeout(function(){ nav(href); }, 0);
-  }
-
-  // Use earliest events that most scripts DON'T block
-  window.addEventListener('pointerdown', handle, { capture: true, passive: false });
-  window.addEventListener('touchstart', handle, { capture: true, passive: false });
-  window.addEventListener('click', handle, { capture: true, passive: false });
-})();
-</script>
-</script>
 </body></html>
