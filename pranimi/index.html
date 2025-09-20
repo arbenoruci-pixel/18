@@ -140,7 +140,6 @@
 .input.piece-qty{ max-width:120px; }
 .piece-row{ display:grid; grid-template-columns: 80px 1fr 120px; gap:8px; align-items:center; }
 
-
 /* payments colors */
 b#euroTotal{ color:#9fd3ff; }
 b#borxhi{ color:#ff8aa0; }
@@ -162,7 +161,6 @@ body{ padding-bottom: 110px; } /* space for footer height */
 .pill{ min-width: 160px; }
 /* --- END PATCH --- */
 </style>
-
 
 <!-- injected by scale_65 -->
 <style id="global_scale_65">
@@ -447,7 +445,6 @@ const LIST = 'order_list_v1';
 })();
 </script>
 
-
 <!-- PATCH v1: math fix + photo buttons for STAZA/SHKALLORE -->
 <script>
 (function(){
@@ -463,8 +460,8 @@ const LIST = 'order_list_v1';
       const list = q('#list-'+listId);
       if(!list) return 0;
       return round2(qq('.piece-row', list).reduce((sum,row)=>{
-        const m2 = parseFloat((row.querySelector('.input.m2')||{}).value||'0'.replace(',', '.')) || 0;
-        const qty = parseFloat((row.querySelector('.input.piece-qty')||{}).value||'1'.replace(',', '.')) || 1;
+        const m2 = parseFloat((row.querySelector('.piece-input')||{}).value||'0'.replace(',', '.')) || 0;
+        const qty = parseFloat((row.querySelector('.piece-qty')||{}).value||'1'.replace(',', '.')) || 1;
         return sum + (m2 * qty);
       }, 0));
     }
@@ -527,7 +524,7 @@ const LIST = 'order_list_v1';
     el.addEventListener('input', e=>{
       if(e.target && (e.target.classList.contains('input'))){
         computeTotalsPatched();
-  window.computeTotals = computeTotalsPatched;
+        window.computeTotals = computeTotalsPatched;
       }
     });
   });
@@ -613,13 +610,12 @@ const LIST = 'order_list_v1';
     ensurePhotos('#list-staza');
     ensureStairsPhoto();
     computeTotalsPatched();
-  window.computeTotals = computeTotalsPatched;
+    window.computeTotals = computeTotalsPatched;
   });
   obs.observe(document.body, {childList:true, subtree:true});
 })();
 </script>
 <!-- END PATCH v1 -->
-
 
 <!-- PATCH v3: Save Draft + Continue handlers (compatible with /orders using assets/app.js) -->
 <script>
@@ -644,8 +640,8 @@ const LIST = 'order_list_v1';
       const list = q('#list-'+listId);
       if(!list) return 0;
       return round2(qq('.piece-row', list).reduce((sum,row)=>{
-        const m2 = num(row.querySelector('.input.m2')?.value);
-        const qty = num(row.querySelector('.input.piece-qty')?.value || 1);
+        const m2 = num(row.querySelector('.piece-input')?.value);
+        const qty = num(row.querySelector('.piece-qty')?.value || 1);
         return sum + (m2 * qty);
       }, 0));
     }
@@ -665,8 +661,8 @@ const LIST = 'order_list_v1';
     const list = q('#list-'+listId);
     if(!list) return [];
     return qq('.piece-row', list).map(row=> ({
-      m2: num(row.querySelector('.input.m2')?.value),
-      qty: num(row.querySelector('.input.piece-qty')?.value || 1),
+      m2: num(row.querySelector('.piece-input')?.value),
+      qty: num(row.querySelector('.piece-qty')?.value || 1),
       note: (row.querySelector('.input.note')?.value || '').trim()
     }));
   }
@@ -715,13 +711,32 @@ const LIST = 'order_list_v1';
   if(btnGo && !btnGo.__wired){
     btnGo.addEventListener('click', (e)=>{
       e.preventDefault();
-      if(saveDraft()){ window.location.href = '/pastrimi/'; }
+      if(saveDraft()){ window.location.href = './pastrimi.html'; }
     });
     btnGo.__wired = true;
   }
 })();
 </script>
 <!-- END PATCH v3 -->
+
+<!-- SAFETY SHIM: convert /folder/ links to ./file.html on this page -->
+<script>
+(function(){
+  var map = {
+    '/pastrimi/': './pastrimi.html',
+    '/pranimi/': './pranimi.html',
+    '/gati/': './gati.html',
+    '/transporti/': './transporti.html',
+    '/marrje-sot/': './marrje-sot.html',
+    '/index/': './index.html',
+    '/': './index.html'
+  };
+  document.querySelectorAll('a[href]').forEach(function(a){
+    var h = a.getAttribute('href');
+    if (map[h]) a.setAttribute('href', map[h]);
+  });
+})();
+</script>
 
 </body>
 </html>
